@@ -3,6 +3,8 @@ package com.example.andeladeveloper.morerecipesandroid.Views.Activities;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,11 +15,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.andeladeveloper.morerecipesandroid.Presenters.GetAllRecipesPresenter;
 import com.example.andeladeveloper.morerecipesandroid.R;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private GetAllRecipesPresenter getAllRecipesPresenter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        initializePresenter();
+        initializeSwipeRefreshLayout();
     }
 
     @Override
@@ -97,5 +104,23 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void initializePresenter() {
+        Log.i("", "initializePresenter: was called");
+        if (getAllRecipesPresenter == null) {
+            getAllRecipesPresenter = new GetAllRecipesPresenter();
+        }
+        getAllRecipesPresenter.getAllRecipesNetworkCall();
+    }
+
+    public void initializeSwipeRefreshLayout() {
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.main_activity_swipe_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initializePresenter();
+            }
+        });
     }
 }
