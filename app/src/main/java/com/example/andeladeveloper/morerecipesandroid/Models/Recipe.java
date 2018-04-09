@@ -148,24 +148,12 @@ public class Recipe implements Parcelable
         return favourites;
     }
 
-    public void setFavourites(Integer favourites) {
-        this.favourites = favourites;
-    }
-
     public Integer getUpvote() {
         return upvote;
     }
 
-    public void setUpvote(Integer upvote) {
-        this.upvote = upvote;
-    }
-
     public Integer getDownvote() {
         return downvote;
-    }
-
-    public void setDownvote(Integer downvote) {
-        this.downvote = downvote;
     }
 
     public String getPicture() {
@@ -180,24 +168,12 @@ public class Recipe implements Parcelable
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     public User getUser() {
         return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
