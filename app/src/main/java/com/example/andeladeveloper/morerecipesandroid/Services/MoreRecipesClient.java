@@ -8,6 +8,6 @@ import retrofit2.http.GET;
 
 public interface MoreRecipesClient {
 
-    @GET("/recipes")
+    @GET("recipes")
     Call<Recipes> getAllRecipes();
 }

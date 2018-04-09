@@ -1,6 +1,7 @@
 package com.example.andeladeveloper.morerecipesandroid.Views.Activities;
 
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -15,13 +16,21 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.andeladeveloper.morerecipesandroid.Models.Recipe;
 import com.example.andeladeveloper.morerecipesandroid.Presenters.GetAllRecipesPresenter;
 import com.example.andeladeveloper.morerecipesandroid.R;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        GetAllRecipesPresenter.IGetAllRecipesPresenterInterface {
 
     private GetAllRecipesPresenter getAllRecipesPresenter;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private ConstraintLayout constraintLayout;
+    private List<Recipe> recipes;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,8 +56,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        initializePresenter();
         initializeSwipeRefreshLayout();
+        initializePresenter();
     }
 
     @Override
@@ -109,13 +118,14 @@ public class MainActivity extends AppCompatActivity
     public void initializePresenter() {
         Log.i("", "initializePresenter: was called");
         if (getAllRecipesPresenter == null) {
-            getAllRecipesPresenter = new GetAllRecipesPresenter();
+            getAllRecipesPresenter = new GetAllRecipesPresenter(this);
         }
         getAllRecipesPresenter.getAllRecipesNetworkCall();
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     public void initializeSwipeRefreshLayout() {
-        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.main_activity_swipe_refresh);
+        swipeRefreshLayout = findViewById(R.id.main_activity_swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -123,4 +133,25 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-}
+
+        @Override
+        public void onGetAllRecipesFailure(boolean status) {
+        if (status) {
+            constraintLayout = findViewById(R.id.main_activity_constraint_layout);
+            Snackbar.make(constraintLayout, "Unable to connect", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Retry", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            initializePresenter();
+                        }
+                    })
+                    .show();
+            }
+
+         }
+
+        @Override
+        public void onGetAllRecipesSuccess(List<Recipe> recipes) {
+            this.recipes = recipes;
+        }
+    }
