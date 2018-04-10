@@ -5,6 +5,8 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -16,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.andeladeveloper.morerecipesandroid.Adapters.GetAllRecipesAdapter;
 import com.example.andeladeveloper.morerecipesandroid.Models.Recipe;
 import com.example.andeladeveloper.morerecipesandroid.Presenters.GetAllRecipesPresenter;
 import com.example.andeladeveloper.morerecipesandroid.R;
@@ -30,13 +33,23 @@ public class MainActivity extends AppCompatActivity
     private SwipeRefreshLayout swipeRefreshLayout;
     private ConstraintLayout constraintLayout;
     private List<Recipe> recipes;
+    private GetAllRecipesAdapter getAllRecipesAdapter;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
+
+        initializePresenter();
+//        initializeAdapter(recipes);
+
         setSupportActionBar(toolbar);
+
+//        if (getAllRecipesAdapter == null) {
+//            getAllRecipesAdapter = new GetAllRecipesAdapter(recipes);
+//        }
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -57,7 +70,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         initializeSwipeRefreshLayout();
-        initializePresenter();
+
+
     }
 
     @Override
@@ -116,12 +130,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void initializePresenter() {
-        Log.i("", "initializePresenter: was called");
+
         if (getAllRecipesPresenter == null) {
             getAllRecipesPresenter = new GetAllRecipesPresenter(this);
         }
         getAllRecipesPresenter.getAllRecipesNetworkCall();
-        swipeRefreshLayout.setRefreshing(false);
+        Log.i("", "initializePresenter: was called");
     }
 
     public void initializeSwipeRefreshLayout() {
@@ -130,10 +144,22 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onRefresh() {
                 initializePresenter();
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
     }
 
+    public void initializeAdapter(List<Recipe> recipeList) {
+        if (getAllRecipesAdapter == null) {
+            getAllRecipesAdapter = new GetAllRecipesAdapter(recipeList);
+        }
+        recyclerView = findViewById(R.id.main_activity_recycler_view);
+        RecyclerView.LayoutManager layoutManager =
+                new LinearLayoutManager(MainActivity.this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(getAllRecipesAdapter);
+
+    }
         @Override
         public void onGetAllRecipesFailure(boolean status) {
         if (status) {
@@ -153,5 +179,12 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onGetAllRecipesSuccess(List<Recipe> recipes) {
             this.recipes = recipes;
+            if (recipes!= null) {
+                Log.i(Integer.toString(recipes.size()), "onGetAllRecipesSuccess: ");
+                initializeAdapter(recipes);
+            } else {
+                Log.i("", "onGetAllRecipesSuccess: empty stuff");
+            }
+
         }
     }

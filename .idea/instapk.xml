@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectStorageHelper">
     <option name="apkLocation" value="$PROJECT_DIR$/app/build/outputs/apk/app-debug.apk" />
-    <option name="projectName" value="More Recipes Android" />
+    <option name="packageName" value="com.example.andeladeveloper.morerecipesandroid" />
+    <option name="projectName" value="More-Recipes-Android" />
   </component>
 </project>
