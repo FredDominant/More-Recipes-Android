@@ -5,6 +5,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -41,15 +42,14 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
-
-        initializePresenter();
-//        initializeAdapter(recipes);
-
         setSupportActionBar(toolbar);
 
-//        if (getAllRecipesAdapter == null) {
-//            getAllRecipesAdapter = new GetAllRecipesAdapter(recipes);
-//        }
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+
+
+        initializePresenter();
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onRefresh() {
                 initializePresenter();
-                swipeRefreshLayout.setRefreshing(false);
             }
         });
     }
@@ -163,6 +162,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onGetAllRecipesFailure(boolean status) {
         if (status) {
+            swipeRefreshLayout.setRefreshing(false);
             constraintLayout = findViewById(R.id.main_activity_constraint_layout);
             Snackbar.make(constraintLayout, "Unable to connect", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Retry", new View.OnClickListener() {
@@ -182,6 +182,7 @@ public class MainActivity extends AppCompatActivity
             if (recipes!= null) {
                 Log.i(Integer.toString(recipes.size()), "onGetAllRecipesSuccess: ");
                 initializeAdapter(recipes);
+                swipeRefreshLayout.setRefreshing(false);
             } else {
                 Log.i("", "onGetAllRecipesSuccess: empty stuff");
             }
